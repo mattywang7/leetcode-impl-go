@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 func main() {
-	s := "cbbd"
-	fmt.Println(longestPalindrome(s))
+	s := "babad"
+	fmt.Println(longestPalindrome2(s))
 }
 
 // dp
@@ -45,4 +45,39 @@ func longestPalindrome(s string) string {
 		}
 	}
 	return s[begin : begin+maxLen]
+}
+
+// we can expand from each edge condition, which means 1 ele or 2 eles
+// iterate all center, until we can no longer expand
+func longestPalindrome2(s string) string {
+	n := len(s)
+	if n < 2 {
+		return s
+	}
+	var expandFromCentre = func(l, r int) int {
+		// expand, no way that l > r
+		for l >= 0 && r < n && s[l] == s[r] {
+			l--
+			r++
+		}
+		return (r - 1) - (l + 1) + 1
+	}
+	start, end := 0, 0
+	for i := 0; i < n; i++ {
+		len1 := expandFromCentre(i, i)
+		len2 := expandFromCentre(i, i+1)
+		maxL := max(len1, len2)
+		if maxL > (end - start + 1) {
+			start = i - (maxL-1)/2
+			end = i + maxL/2
+		}
+	}
+	return s[start : end+1]
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
